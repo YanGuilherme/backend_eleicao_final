@@ -1,0 +1,48 @@
+services:
+  nginx-proxy:
+    build:
+      context: ./nginx
+    container_name: nginx_balanceador
+    ports:
+      - "8081:80"
+    networks:
+      - rede
+
+  coletor:
+    build:
+      context: .
+    environment:
+      VIRTUAL_HOST: coletor.local
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres_eleicao:5432/eleicao
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: root
+      JWT_SECRET: MN4064ZQbSAr4cijQMphT8dbpGgJoOaeL6aFF/wKhkA=
+
+    networks:
+      rede:
+        aliases:
+          - coletor1
+          - coletor2
+          - coletor3
+
+  postgres_eleicao:
+    image: postgres:latest
+    container_name: postgres_eleicao
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: eleicao
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_eleicao_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - rede
+
+networks:
+  rede:
+    external: true
+
+volumes:
+  postgres_eleicao_data:
