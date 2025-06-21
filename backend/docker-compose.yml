@@ -25,20 +25,6 @@ services:
           - coletor2
           - coletor3
 
-  postgres_eleicao:
-    image: postgres:latest
-    container_name: postgres_eleicao
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: root
-      POSTGRES_DB: eleicao
-    ports:
-      - "5433:5432"
-    volumes:
-      - postgres_eleicao_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    networks:
-      - rede
 
 networks:
   rede:
