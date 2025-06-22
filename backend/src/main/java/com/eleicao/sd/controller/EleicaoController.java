@@ -25,14 +25,18 @@ public class EleicaoController {
     @PostMapping("/votar/{id_candidato}")
     public ResponseEntity<String> votar(@RequestHeader("Authorization") String token, @PathVariable Long id_candidato) {
         try {
-            String nick = jwtUtil.getNickFromToken(token.replace("Bearer ", ""));
+            String cleanToken = token.replace("Bearer ", "");
+
+            if (!jwtUtil.validateToken(cleanToken)) {
+                return ResponseEntity.status(401).body("Token inválido ou expirado");
+            }
+
+            String nick = jwtUtil.getNickFromToken(cleanToken);
             String resposta = eleicaoService.votar(nick, id_candidato);
             return ResponseEntity.ok(resposta);
 
         } catch (RuntimeException e) {
             return ResponseEntity.status(400).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(401).body("Token inválido ou expirado");
         }
     }
 }

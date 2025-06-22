@@ -41,12 +41,12 @@ public class UserController {
     }
     @GetMapping
     public ResponseEntity<List<String>> listarUsers(@RequestHeader("Authorization") String token){
-        String nick = jwtUtil.getNickFromToken(token.replace("Bearer ", ""));
-        if(nick != null && !nick.isEmpty()){
-            List<String> list = userService.buscarUsers();
-            return ResponseEntity.ok(list);
+        String cleanToken = token.replace("Bearer ", "");
+        if (!jwtUtil.validateToken(cleanToken)) {
+            return ResponseEntity.status(401).build();
         }
-        return ResponseEntity.status(401).build();
+        List<String> list = userService.buscarUsers();
+        return ResponseEntity.ok(list);
     }
 
     @GetMapping("/healthCheck")
